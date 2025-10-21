@@ -2,6 +2,8 @@
 
 This repository documents the reverse‑engineered RF protocol used by a `Formill FT-21` treadmill’s remote control.
 
+<img src="782c6f46-4d0e-4aed-81ce-5e189fd41c6e.jpg.webp" alt="Treadmill remote" width="600" />
+
 
 ## 🎛 Treadmill Remote Button Frames
 
