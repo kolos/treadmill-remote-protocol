@@ -1,38 +1,63 @@
 # Treadmill Remote Protocol
 
-This repository documents the reverse‑engineered RF protocol used by a `Formill FT-21` treadmill’s remote control.
+This repository documents the reverse‑engineered RF protocol used by the **Formill FT‑21 treadmill** remote control, and provides an Arduino library (`TreadmillRemote`) for transmitting commands via an ESP8266 RF module.
 
-<img src="782c6f46-4d0e-4aed-81ce-5e189fd41c6e.jpg.webp" alt="Treadmill remote" width="600" />
+<img src="assets/treadmill-remote.webp" alt="Treadmill remote" width="600" />
 
+## 📖 Available Methods
+
+Once you create a `TreadmillRemote` instance and call `begin()`, you can use the following methods to control the treadmill:
+| Method	| Description
+| --------- | -----------
+| begin()	| Initializes the transmitter pin. Call this once in setup().
+| start()	| Sends the START command to begin treadmill operation.
+| stop()	| Sends the STOP command to halt the treadmill.
+| plus()	| Sends the PLUS command to increase speed.
+| minus()	| Sends the MINUS command to decrease speed.
+| mode()	| Sends the MODE command to cycle through treadmill modes.
+
+### Example 
+
+```cpp
+#include <TreadmillRemote.h>
+
+TreadmillRemote treadmillRemote(D2);
+
+void setup() {
+    treadmillRemote.begin();
+
+    treadmillRemote.start();   // Start treadmill
+}
+
+void loop() {
+    // Nothing here
+}
+
+```
 
 ## 🎛 Treadmill Remote Button Frames
 
 ### 🔎 Prefix Note
-All frames share the same **72‑bit prefix**:
-`101010101010101010101010101010101010101010101010010101100110101010101001100101`
+All frames share the same **54‑bit prefix**:
+`101010101010101010101010101010101010101010101010010101`
 
 
-Only the **last 3 bits** change, encoding the specific button command.
-
-
-| Button | Command bits | Full 75‑bit frame |
-|--------|--------------|--------------------------------------------------------------------------|
-| PLUS   | `000`        | 101010101010101010101010101010101010101010101010010101100110101010101001100101000 |
-| MINUS  | `001`        | 101010101010101010101010101010101010101010101010010101100110101010101001100101001 |
-| STOP   | `010`        | 101010101010101010101010101010101010101010101010010101100110101010101001100101010 |
-| PLAY   | `011`        | 101010101010101010101010101010101010101010101010010101100110101010101001100101011 |
-| MODE   | `111`        | 101010101010101010101010101010101010101010101010010101100110101010101001100101111 |
+| Button | Full 81‑bit frame |
+|--------|--------------|
+| PLUS   | 101010101010101010101010101010101010101010101010010101010110100110101010100101100 
+| MINUS  | 101010101010101010101010101010101010101010101010010101011010011010101010010110010
+| STOP   | 101010101010101010101010101010101010101010101010010101100110101010101001100101010
+| START  | 101010101010101010101010101010101010101010101010010101011010100110101010010101100
+| MODE   | 101010101010101010101010101010101010101010101010010101100101010110101001101010100
 
 
 ## ⏱ Protocol Timings (Rounded)
 
-| Element     | High (µs) | Low (µs) | Notes |
-|-------------|-----------|----------|-------|
-| **Short**   | 300       | —        | Base unit |
-| **Long**    | 800       | —        | ≈ 3 × short |
-| **Bit “0”** | 300       | 800      | Short HIGH + Long LOW |
-| **Bit “1”** | 800       | 300      | Long HIGH + Short LOW |
-| **Sync**    | 10000     | 300      | Frame start marker |
+| Element     | Length (µs)
+|-------------|-----------
+| **Short**   | 300
+| **Long**    | 800
+| **Sync**    | 10000
 
 ## 📂 RAW Captures
 
@@ -43,7 +68,7 @@ Each line starts with the sync pulse (~10 ms), followed by alternating HIGH/LO
 10024,822,297,814,298,813,303,810,305,809,306,807,302,808,310,803,305,806,306,809,310,800,314,801,310,800,316,796,315,799,312,798,320,793,319,794,325,792,320,789,320,796,320,792,323,790,326,787,322,289,825,295,819,293,815,796,320,295,818,797,318,793,319,793,319,795,323,789,324,786,329,289,824,789,320,294,821,292,814,302,811,302
 
 
-### PLAY
+### START
 10003,842,281,827,290,820,296,818,296,813,300,812,302,812,303,811,301,808,309,804,306,802,315,801,316,798,313,797,315,799,312,800,316,798,316,797,318,793,317,795,321,792,322,791,320,794,322,788,323,292,821,292,821,294,814,299,815,797,316,799,315,797,315,297,816,798,316,796,317,797,316,797,321,292,813,297,815,302,816,794,321,292
 
 
